@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+    }
+    #quiz-box {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    .option {
+      background: #e0e0e0;
+      margin: 10px 0;
+      padding: 12px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .option:hover {
+      background: #c8e6c9;
+    }
+    .option.correct {
+      background: #a5d6a7;
+    }
+    .option.wrong {
+      background: #ef9a9a;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #score-box {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div id="quiz-box">
+    <h2 id="question">Loading question...</h2>
+    <div id="options"></div>
+    <button id="nextBtn" style="display:none;">Next</button>
+    <div id="score-box"></div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "Which language runs in a web browser?",
+        options: ["Java", "C", "Python", "JavaScript"],
+        answer: "JavaScript"
+      },
+      {
+        question: "What does CSS stand for?",
+        options: ["Computer Style Sheets", "Cascading Style Sheets", "Creative Style System", "Colorful Style Setup"],
+        answer: "Cascading Style Sheets"
+      },
+      {
+        question: "Which HTML tag is used to define an internal style sheet?",
+        options: ["<style>", "<css>", "<script>", "<link>"],
+        answer: "<style>"
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const nextBtn = document.getElementById('nextBtn');
+    const scoreBox = document.getElementById('score-box');
+
+    function loadQuestion() {
+      nextBtn.style.display = "none";
+      scoreBox.innerText = "";
+      const q = quizData[current];
+      questionEl.innerText = q.question;
+      optionsEl.innerHTML = "";
+
+      q.options.forEach(option => {
+        const div = document.createElement('div');
+        div.classList.add('option');
+        div.innerText = option;
+        div.addEventListener('click', () => selectAnswer(div, option));
+        optionsEl.appendChild(div);
+      });
+    }
+
+    function selectAnswer(optionDiv, selected) {
+      const correct = quizData[current].answer;
+      const allOptions = document.querySelectorAll('.option');
+      allOptions.forEach(opt => opt.style.pointerEvents = "none");
+
+      if (selected === correct) {
+        optionDiv.classList.add('correct');
+        score++;
+      } else {
+        optionDiv.classList.add('wrong');
+        allOptions.forEach(opt => {
+          if (opt.innerText === correct) opt.classList.add('correct');
+        });
+      }
+
+      nextBtn.style.display = "inline-block";
+    }
+
+    nextBtn.addEventListener('click', () => {
+      current++;
+      if (current < quizData.length) {
+        loadQuestion();
+      } else {
+        showScore();
+      }
+    });
+
+    function showScore() {
+      questionEl.innerText = "Quiz Completed!";
+      optionsEl.innerHTML = "";
+      nextBtn.style.display = "none";
+      scoreBox.innerText = `You scored ${score} out of ${quizData.length}`;
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
